@@ -1,6 +1,7 @@
 import json
 import logging
 from multiprocessing.pool import Pool
+from os import path
 
 from util.TwythonConnector import TwythonConnector
 from twython import TwythonError, TwythonRateLimitError
@@ -63,6 +64,12 @@ def collect_tweets(news_list, news_source, label, config: Config):
 
     for news in news_list:
         for tweet_id in news.tweet_ids:
+            dump_dir = "{}/{}/{}/{}".format(config.dump_location, news_source, label, news.news_id)
+            tweet_file = "{}/tweets/{}.json".format(dump_dir, tweet_id)
+
+            if path.exists(tweet_file):
+                continue
+
             tweet_id_list.append(Tweet(tweet_id, news.news_id, news_source, label))
 
     tweet_chunks = equal_chunks(tweet_id_list, 100)
